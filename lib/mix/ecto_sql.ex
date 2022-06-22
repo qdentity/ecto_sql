@@ -7,6 +7,14 @@ defmodule Mix.EctoSQL do
   @spec ensure_migrations_paths(Ecto.Repo.t, Keyword.t) :: [String.t]
   def ensure_migrations_paths(repo, opts) do
     paths = Keyword.get_values(opts, :migrations_path)
+
+    paths =
+      if paths == [] do
+        Keyword.get(repo.config(), :migrations_path, []) |> List.wrap()
+      else
+        paths
+      end
+
     paths = if paths == [], do: [Path.join(source_repo_priv(repo), "migrations")], else: paths
 
     if not Mix.Project.umbrella?() do
